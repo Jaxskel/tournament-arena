@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "engine": "83a776283bdb958f82db25554b5ed0966aaf6e49",
+  "content": "OpenArena 0.8.8 (curated subset)",
+  "files": [
+    {
+      "url": "/assets/arena.pk3",
+      "path": "/baseq3/arena.pk3",
+      "bytes": 91304099,
+      "sha256": "a5615e1c71a8998c54907d2311d557e683f568880c7383167522710ba672efee"
+    }
+  ],
+  "maps": [
+    {
+      "id": "oa_dm1",
+      "name": "The Atrium"
+    },
+    {
+      "id": "oa_rpg3dm2",
+      "name": "Reactor"
+    }
+  ]
+}

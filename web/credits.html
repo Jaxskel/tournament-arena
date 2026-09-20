@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Credits & source · Tournament Arena</title>
+    <link rel="stylesheet" href="/web/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand-word" href="/">TOURNAMENT<span>ARENA</span></a
+      ><a href="/">← Back to servers</a>
+    </header>
+    <main class="document">
+      <h1>Credits & source</h1>
+      <p>
+        Classic arena combat, built with the open-source ioquake3 engine and
+        OpenArena’s redistributable game media. No proprietary Quake III or
+        Unreal Tournament assets are included.
+      </p>
+      <h2>Engine and game logic</h2>
+      <p>
+        id Software, the ioquake3 team, and contributors. GPL-2.0-or-later.
+        Based on
+        <a
+          href="https://github.com/ioquake/ioq3/tree/83a776283bdb958f82db25554b5ed0966aaf6e49"
+          >ioquake3 revision 83a77628</a
+        >, with browser transport and server admission changes.
+      </p>
+      <p>
+        <a href="/source/ioquake3-source.tar.gz"
+          >Download the complete modified engine source</a
+        >
+      </p>
+      <h2>Game media</h2>
+      <p>
+        OpenArena 0.8.8, by the OpenArena team and contributing artists. Media
+        is licensed under GPL version 2. Original credits and per-asset notices
+        are preserved in the content pack. The two maps are oa_dm1 and
+        oa_rpg3dm2.
+      </p>
+      <p>
+        <a href="/source/openarena-preferred-source.tar.gz"
+          >Download OpenArena’s preferred asset source (SVN revision 951)</a
+        >
+        ·
+        <a href="/assets/arena.pk3"
+          >Download the exact distributed media and game pack</a
+        >
+        ·
+        <a href="https://openarena.ws/svn/source/assets/"
+          >Upstream asset source</a
+        >
+      </p>
+      <h2>Tournament adapter and demo</h2>
+      <p>
+        Original web shell logic, gateway, integration bridge, engine patches,
+        tests, and build scripts are GPL-2.0-or-later. The WebSocket library ws
+        uses the MIT license. The launcher and game menus are original project
+        code. Barlow and Barlow Condensed, by Jeremy Tribby, use the SIL Open
+        Font License. See the third-party notices for licenses.
+      </p>
+      <p>
+        <a href="/source/tournament-arena-source.tar.gz"
+          >Download the adapter, tests, and build scripts</a
+        >
+        · <a href="/source/LICENSE.txt">GNU GPL license</a> ·
+        <a href="/source/NOTICE.txt">Third-party notices</a>
+      </p>
+      <h2>Integration status</h2>
+      <p>
+        This demo does not log into Tournament, settle money, or award platform
+        points. Tournament’s private ticket validation, scoring, reward and
+        anti-cheat services must be connected and verified before competitive
+        rewards can be enabled. Browser gameplay is backed by an authoritative
+        native server; this is not a claim of complete anti-cheat parity.
+      </p>
+    </main>
+  </body>
+</html>

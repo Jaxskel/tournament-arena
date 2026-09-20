@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tournament — Arena</title>
+    <link rel="stylesheet" href="/web/arena.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to game</a>
+    <header class="game-header">
+      <a class="brand-word" href="/" aria-label="Tournament home"
+        >TOURNAMENT<span>ARENA</span></a
+      >
+      <nav aria-label="Game navigation">
+        <button class="v2-text-btn" data-help>How to play</button
+        ><button class="v2-text-btn" data-diagnostics>Debug</button
+        ><a href="/credits">Credits &amp; source</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div id="lobby" class="lobby">
+        <section class="hero">
+          <div class="hero-image" aria-hidden="true"></div>
+          <div class="hero-copy">
+            <p class="eyebrow">
+              <span class="live-dot"></span> BROWSER ARENA SHOOTER
+            </p>
+            <h1>TOURNAMENT</h1>
+            <p class="hero-description">
+              Six bots. Bring your friends.<br />Weapons, pickups, and non-stop
+              deathmatch.
+            </p>
+            <div class="hero-actions">
+              <button id="quickplay" class="v2-btn primary" disabled>
+                ENTER ARENA <span>↗</span></button
+              ><button id="practice-play" class="v2-btn">BOT PRACTICE</button>
+            </div>
+            <p class="hero-note">
+              DESKTOP · KEYBOARD &amp; MOUSE · NO ACCOUNT NEEDED
+            </p>
+          </div>
+          <div class="hero-foot">
+            <span id="next-description">Automatic map rotation</span
+            ><span id="next-count">Connecting…</span
+            ><span id="lobby-ping">—</span>
+          </div>
+        </section>
+        <div id="server-error" role="status" hidden>
+          <span id="server-error-message"></span
+          ><button id="retry-server" class="v2-btn">Retry connection</button
+          ><button class="v2-btn" data-diagnostics>Debug</button>
+        </div>
+        <section class="rooms-section" aria-label="Server browser">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">PLAY YOUR WAY</p>
+              <h2>Join a match</h2>
+            </div>
+            <span id="online-count">Connecting…</span>
+          </div>
+          <div class="server-mode-controls">
+            <div class="v2-mode-tabs" aria-label="Game mode">
+              <button data-filter="all" class="active" aria-pressed="true">
+                All matches</button
+              ><button data-filter="deathmatch" aria-pressed="false">
+                Deathmatch</button
+              ><button data-filter="practice" aria-pressed="false">
+                Practice
+              </button>
+            </div>
+            <button id="how-to-play" class="v2-text-btn">Controls ↗</button>
+          </div>
+          <div class="server-filters">
+            <label class="server-filter"
+              ><span>YOUR NAME</span
+              ><input
+                id="player-name"
+                maxlength="20"
+                autocomplete="nickname"
+                value="Ranger" /></label
+            ><label class="server-filter grow"
+              ><span>FIND A MATCH</span
+              ><input
+                id="server-search"
+                placeholder="Search matches"
+                autocomplete="off" /></label
+            ><label class="server-filter"
+              ><span>SORT BY</span
+              ><select id="server-sort">
+                <option value="recommended">Recommended</option>
+                <option value="players">Most players</option>
+              </select></label
+            >
+          </div>
+          <div class="server-list-summary">
+            <div>
+              <label
+                ><input id="with-players" type="checkbox" /> With humans</label
+              ><label
+                ><input id="open-only" type="checkbox" /> Open slots only</label
+              >
+            </div>
+            <span id="server-summary">Loading matches…</span>
+          </div>
+          <div class="v2-room-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>MATCH</th>
+                  <th>CURRENT MAP</th>
+                  <th>MODE</th>
+                  <th>HUMANS</th>
+                  <th>LATENCY</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="rooms"></tbody>
+            </table>
+          </div>
+          <p class="match-note">
+            Six bots stay in each match, alongside up to six human players. Maps
+            rotate automatically.
+          </p>
+        </section>
+        <footer class="arena-footer">
+          <span>TOURNAMENT · POWERED BY IOQUAKE3 + OPENARENA</span
+          ><a href="/credits">Credits &amp; source</a>
+        </footer>
+      </div>
+      <section id="game" hidden>
+        <div class="arena-toolbar">
+          <a class="v2-text-btn" href="/">← Servers</a
+          ><strong id="room-title">Tournament Arena</strong
+          ><span id="game-mode">DEATHMATCH</span><span id="current-map"></span
+          ><span class="arena-spacer"></span><span id="metrics"></span
+          ><button id="settings-button" class="v2-btn">Settings</button
+          ><button class="v2-btn" data-diagnostics>Debug</button
+          ><button id="fullscreen" class="v2-btn">Fullscreen ↗</button>
+        </div>
+        <div id="stage">
+          <canvas
+            id="canvas"
+            width="1280"
+            height="720"
+            tabindex="0"
+            aria-label="Quake arena game"
+          ></canvas>
+          <div id="loading" class="arena-loading">
+            <div class="brand-word">TOURNAMENT</div>
+            <h2 id="load-title">ARENA DEATHMATCH</h2>
+            <p id="load-status">Preparing engine…</p>
+            <progress id="progress" max="100" value="0"></progress
+            ><small id="load-detail"></small
+            ><button id="retry" class="v2-btn primary" hidden>Try again</button
+            ><a href="/">Back to servers</a>
+          </div>
+          <div id="capture" hidden>
+            <button id="capture-button" type="button">CLICK TO PLAY</button
+            ><span id="capture-hint"
+              >WASD MOVE · MOUSE AIM · SPACE JUMP · ESC MENU</span
+            ><button id="capture-settings" class="v2-text-btn">Settings</button
+            ><a href="/">Leave arena</a>
+          </div>
+          <div
+            id="board"
+            hidden
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="board-mode"
+          >
+            <div class="panel">
+              <div class="head">
+                <div class="brand-word">TOURNAMENT</div>
+                <div class="mode" id="board-mode">ARENA DEATHMATCH</div>
+                <div class="rule" id="board-rule">
+                  30 FRAGS · AUTOMATIC MAP ROTATION
+                </div>
+                <div class="note" id="board-note">
+                  Six bots · Real multiplayer
+                </div>
+                <div class="status" id="board-status">
+                  MATCH CONTINUES WHILE THE MENU IS OPEN
+                </div>
+              </div>
+              <div class="rows" id="board-rows">
+                <div class="empty">Loading standings…</div>
+              </div>
+              <div class="settings" id="board-settings">
+                <label class="slbl" for="sensitivity">MOUSE SENSITIVITY</label
+                ><input
+                  class="sens-range"
+                  id="sensitivity"
+                  type="range"
+                  min="0.2"
+                  max="3"
+                  step="0.1"
+                  value="1"
+                  aria-label="Mouse sensitivity"
+                /><output class="sval" id="sensitivity-value">1.0x</output
+                ><button class="sreset" id="sensitivity-reset">RESET</button>
+                <label class="slbl" for="sound-toggle">SOUND</label
+                ><button class="sreset" id="sound-toggle" aria-pressed="true">
+                  ON</button
+                ><label class="slbl" for="music-toggle">MUSIC</label
+                ><button class="sreset" id="music-toggle" aria-pressed="false">
+                  OFF</button
+                ><label class="slbl" for="respawn">STUCK?</label
+                ><button class="sreset" id="respawn">RESPAWN</button>
+                <div class="brk"></div>
+                <label class="slbl" for="volume">SOUND VOLUME</label
+                ><input
+                  class="sens-range vol-range"
+                  id="volume"
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value="85"
+                  aria-label="Game sound volume"
+                /><output class="sval" id="volume-value">85%</output
+                ><button class="sreset" id="reconnect">RECONNECT</button
+                ><button class="sreset" data-diagnostics>DEBUG</button>
+              </div>
+              <div class="foot">
+                <button id="resume-button" class="state">RESUME GAME</button>
+                <div class="hint" id="play-hint">
+                  CLICK RESUME OR PRESS ESC TO RETURN
+                </div>
+                <div class="keys">
+                  WASD MOVE · MOUSE AIM · SPACE JUMP · 1–9 WEAPONS · TAB SCORES
+                  · F FULLSCREEN
+                </div>
+                <a class="leave-arena" href="/">LEAVE ARENA</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p id="game-note">WASD MOVE · MOUSE AIM · SPACE JUMP · ESC MENU</p>
+      </section>
+    </main>
+    <dialog id="help">
+      <button id="help-close" class="v2-btn">Close</button>
+      <h2>How to play</h2>
+      <p>
+        WASD to move, mouse to aim, left click to fire, Space to jump. Use 1–9
+        or the mouse wheel to switch weapons.
+      </p>
+      <p>
+        Maps rotate after each match. Escape opens the Tournament menu; Resume
+        game returns you to play. The match keeps running while you change
+        settings.
+      </p>
+      <p>Use a desktop browser and allow mouse capture when prompted.</p>
+    </dialog>
+
+    <dialog id="diagnostics" aria-labelledby="diagnostics-title">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">TROUBLESHOOTING</p>
+          <h2 id="diagnostics-title">Game diagnostics</h2>
+        </div>
+        <button id="diagnostics-close" class="v2-btn">Close</button>
+      </div>
+      <p class="diagnostic-intro">
+        Connection, loading, controls, and recent errors. Reports exclude names,
+        chat, tickets, and page query parameters.
+      </p>
+      <div id="diagnostics-summary" class="diagnostic-grid"></div>
+      <div class="diagnostic-actions">
+        <button id="diagnostics-check" class="v2-btn">Check server</button
+        ><button id="diagnostics-download" class="v2-btn primary">
+          Download report</button
+        ><button id="diagnostics-reload" class="v2-btn">Reconnect</button>
+      </div>
+      <p id="diagnostics-status" role="status"></p>
+      <details>
+        <summary>Recent diagnostic events</summary>
+        <pre id="diagnostics-log"></pre>
+      </details>
+    </dialog>
+    <script type="module" src="/web/app.js"></script>
+  </body>
+</html>

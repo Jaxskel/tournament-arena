@@ -1,0 +1,21 @@
+name: Checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  source-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: JavaScript syntax
+        run: find server web tests -type f \( -name '*.mjs' -o -name '*.js' \) -exec node --check {} \;
+      - name: Build script syntax
+        run: |
+          python3 -m compileall -q scripts
+          bash -n scripts/build-engine.sh scripts/package-source.sh

@@ -1,0 +1,11 @@
+node_modules
+runtime
+.build
+.git
+public/engine
+public/assets/*.pk3
+bin
+docs/evidence
+.env
+.env.*
+.DS_Store

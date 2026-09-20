@@ -1,0 +1,13 @@
+node_modules/
+.build/
+runtime/
+public/assets/*.pk3
+public/engine/
+public/source/*.tar.gz
+bin/
+.env
+__pycache__/
+.DS_Store
+.env.*
+!.env.example
+docs/evidence/

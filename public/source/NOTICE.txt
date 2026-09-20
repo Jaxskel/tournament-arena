@@ -1,0 +1,23 @@
+Tournament Arena — browser demo
+
+Engine and game logic: ioquake3 / id Software and contributors.
+Upstream https://github.com/ioquake/ioq3
+Revision 83a776283bdb958f82db25554b5ed0966aaf6e49
+License: GPL-2.0-or-later; see LICENSE and source archive.
+
+Game media: OpenArena team and contributors, 0.8.8.
+https://openarena.ws/
+GPL version 2. Original per-asset notices and credits are retained in arena.pk3.
+The preferred media source snapshot is SVN revision 951, available in the
+source download alongside the full modified engine and wrapper source.
+No proprietary Quake III Arena or Unreal Tournament game content is bundled.
+
+Original browser bridge, gateway, shell logic, patches and build scripts: GPL-2.0-or-later.
+Dependency ws: MIT. Its notice is included with the dependency distribution.
+The standalone launcher and game menu are original project code. No Tournament
+website CSS, navigation snapshots, logos or account UI are bundled.
+Locally bundled Barlow / Barlow Condensed (Jeremy Tribby) use the SIL Open Font
+License. See public/fonts/Barlow-OFL.txt.
+The missing legacy map music/sonic6.ogg aliases OpenArena's music/OA01.ogg.
+
+This standalone browser game uses the Tournament working title; no Epic Games or id Software endorsement is implied.

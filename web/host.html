@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tournament frame integration preview</title>
+    <link rel="stylesheet" href="/web/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand-word" href="/">TOURNAMENT<span>ARENA</span></a
+      ><span class="demo-pill">DEVELOPMENT HOST</span>
+    </header>
+    <main class="document" style="max-width: 1280px">
+      <h1>Game frame preview</h1>
+      <p>
+        This host exercises Tournament’s message contract using short-lived demo
+        tickets. It does not log into Tournament or award rewards.
+      </p>
+      <iframe
+        id="frame"
+        class="host-frame"
+        title="Tournament Arena embedded game"
+        src="about:blank"
+        data-src="/play?embed=1&room=arena&name=Preview"
+        allow="autoplay; fullscreen; pointer-lock"
+      ></iframe>
+      <pre class="host-log" id="events">Waiting for the game…</pre>
+    </main>
+    <script type="module">
+      const frame = document.getElementById("frame"),
+        events = document.getElementById("events");
+      window.addEventListener("message", async (event) => {
+        if (
+          event.origin !== location.origin ||
+          event.source !== frame.contentWindow ||
+          event.data?.type !== "d2dm"
+        )
+          return;
+        const { event: kind } = event.data;
+        events.textContent +=
+          "\n" + new Date().toLocaleTimeString() + " " + kind;
+        if (kind === "need-token") {
+          try {
+            const r = await fetch("/api/demo/ticket", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ room: "arena", name: "Preview" }),
+            });
+            const { ticket } = await r.json();
+            if (!r.ok) throw Error("Ticket unavailable");
+            frame.contentWindow.postMessage(
+              { type: "hitplay-token", token: ticket },
+              location.origin,
+            );
+          } catch {
+            frame.contentWindow.postMessage(
+              { type: "hitplay-token", token: "" },
+              location.origin,
+            );
+          }
+        }
+      });
+      // Attach the token listener before a cached child can request admission.
+      frame.src = frame.dataset.src;
+    </script>
+  </body>
+</html>

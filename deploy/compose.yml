@@ -1,0 +1,15 @@
+services:
+  arena:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    init: true
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - arena-runtime:/arena/runtime
+    restart: unless-stopped
+    environment:
+      ARENA_ALLOWED_ORIGINS: ${ARENA_ALLOWED_ORIGINS:-}
+volumes:
+  arena-runtime:
