@@ -70,7 +70,7 @@ test("spectator game state is delayed, ordinary play and handshake are not", () 
   ]);
   assert.equal(gamePacketDelay(status, true), 5000);
 });
-async function fixture(t) {
+async function fixture(t, options = {}) {
   const sessionDir = await mkdtemp(join(tmpdir(), "arena-test-")),
     udp = dgram.createSocket("udp4");
   udp.bind(0, "127.0.0.1");
@@ -80,7 +80,12 @@ async function fixture(t) {
   const rooms = new Map([
     ["atrium", { ready: true, port: udp.address().port, sessionDir }],
   ]);
-  const gateway = attachGateway(server, { rooms, secret, spectatorDelay: 150 });
+  const gateway = attachGateway(server, {
+    rooms,
+    secret,
+    spectatorDelay: 150,
+    ...options,
+  });
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
   const origin = `http://127.0.0.1:${server.address().port}`,
@@ -209,4 +214,29 @@ test("observer capacity is independent of six human slots", async (t) => {
     [...f.gateway.sessions].filter((s) => s.claims?.watch).length,
     4,
   );
+});
+
+test("new match standings follow the observer delay and clients cannot submit scores", async (t) => {
+  let emittedAt = 0;
+  const f = await fixture(t, {
+    getMatchState: () => ({
+      mode: "perps",
+      rewards: false,
+      emittedAt: (emittedAt = Date.now()),
+      rows: [],
+    }),
+  });
+  const ws = await f.connect(
+    makeTicket(secret, { room: "atrium", name: "DelayedBoard", watch: true }),
+  );
+  const [data, binary] = await once(ws, "message");
+  const message = JSON.parse(String(data));
+  assert.equal(binary, false);
+  assert.equal(message.type, "match");
+  assert.ok(Date.now() - message.match.emittedAt >= 145);
+  const closed = once(ws, "close");
+  ws.send(
+    JSON.stringify({ type: "match", points: 99999, previewCents: 99999 }),
+  );
+  assert.equal((await closed)[0], 4400);
 });

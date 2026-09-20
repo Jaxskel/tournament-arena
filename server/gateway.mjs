@@ -67,6 +67,7 @@ export function attachGateway(
   {
     rooms,
     secret,
+    getMatchState = () => null,
     allowedOrigins = [],
     onEvent = () => {},
     spectatorDelay = 5000,
@@ -114,10 +115,27 @@ export function attachGateway(
       while (s.queue.length && s.queue[0].due <= performance.now()) {
         const p = s.queue.shift();
         s.queuedBytes -= p.data.length;
-        if (ws.readyState === 1) ws.send(p.data, { binary: true });
+        if (ws.readyState === 1) ws.send(p.data, { binary: p.binary ?? true });
       }
     }, 10);
+    const standings = setInterval(() => {
+      if (!authenticated || ws.readyState !== 1) return;
+      const match = getMatchState(s.claims.room);
+      if (!match) return;
+      const data = Buffer.from(JSON.stringify({ type: "match", match }));
+      if (ws.bufferedAmount > 1048576 || s.queuedBytes > 4194304)
+        return ws.close(4408, "Connection too slow");
+      if (s.claims.watch) {
+        s.queue.push({
+          data,
+          binary: false,
+          due: performance.now() + spectatorDelay,
+        });
+        s.queuedBytes += data.length;
+      } else ws.send(data, { binary: false });
+    }, 1000);
     async function cleanup() {
+      clearInterval(standings);
       clearTimeout(deadline);
       clearInterval(pump);
       clearInterval(heartbeat);

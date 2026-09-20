@@ -12,9 +12,29 @@ try {
   await page.waitForFunction(() => arena?.phase === "playing", null, {
     timeout: 60000,
   });
-  const botCounts = [];
+  const botCounts = [],
+    completedRounds = [];
   const maps = [await page.evaluate(() => arena.stats.map)];
   for (let i = 0; i < 2; i++) {
+    await page.waitForFunction(() => arena.match?.status === "finished", null, {
+      timeout: 100000,
+    });
+    await page.waitForFunction(
+      () =>
+        arena.match.rows.every(
+          (row) =>
+            arena.scores.find((s) => s.id === row.slot)?.score === row.frags,
+        ),
+      null,
+      { timeout: 8000 },
+    );
+    const finished = await page.evaluate(() => arena.match);
+    completedRounds.push({
+      id: finished.id,
+      rows: finished.rows.length,
+      nativeScoresMatch: true,
+    });
+    await page.screenshot({ path: `docs/evidence/round-results-${i + 1}.png` });
     await page.waitForFunction(
       (last) =>
         arena.stats.map &&
@@ -50,6 +70,7 @@ try {
     sockets,
     automatic: true,
     botCounts,
+    completedRounds,
     readyClicks: 0,
     stats: await page.evaluate(() => arena.stats),
   };

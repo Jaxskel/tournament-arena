@@ -1,4 +1,10 @@
 import { createBridge } from "./bridge.js";
+import {
+  dollars,
+  renderMatch,
+  renderWeaponTable,
+  modeForRoom,
+} from "./match-ui.js";
 import { createDiagnostics } from "./diagnostics.js";
 const $ = (id) => document.getElementById(id),
   params = new URLSearchParams(location.search);
@@ -7,7 +13,11 @@ const embedded = params.get("embed") === "1";
 if (embedded) document.body.classList.add("embedded");
 let engine,
   transport,
-  roomId = params.get("room") === "practice" ? "practice" : "arena",
+  roomId = ["practice", "ppk"].includes(params.get("room"))
+    ? params.get("room")
+    : params.get("mode") === "perps"
+      ? "ppk"
+      : "arena",
   watch = params.get("watch") === "1";
 const state = (window.arena = {
   phase: "lobby",
@@ -78,122 +88,50 @@ function launch(room, isWatch = false) {
       name: nameInput.value || "Ranger",
     });
 }
-$("quickplay").onclick = () => launch("arena");
+let selectedRoom = saved("arena-mode", "arena");
+if (!["arena", "ppk"].includes(selectedRoom)) selectedRoom = "arena";
+let roomList = [];
+function updateMenu() {
+  const mode = modeForRoom(config.policy, selectedRoom),
+    room = roomList.find((r) => r.id === selectedRoom);
+  $("selected-mode").textContent = mode.name.toUpperCase();
+  $("mode-description").textContent = mode.description;
+  $("mode-prizes").textContent =
+    selectedRoom === "arena"
+      ? "PRIZE PREVIEW · " +
+        (mode.prizePreviewCents || []).map(dollars).join(" / ")
+      : "WEAPON POINTS · 5 / 4 / 3 / 2 / 1";
+  $("quickplay").disabled = !room?.ready || room.players >= 6 || !!configError;
+  $("watch-play").disabled =
+    !room?.ready || room.watchers >= 4 || !!configError;
+  $("practice-play").disabled =
+    !roomList.find((r) => r.id === "practice")?.ready || !!configError;
+  $("next-description").textContent = room
+    ? `${room.mapName} · ${room.players}/6 players · ${room.bots} bots · Maps rotate automatically`
+    : "Connecting to the arena…";
+}
+$("quickplay").onclick = () => launch(selectedRoom);
 $("practice-play").onclick = () => launch("practice");
-let roomList = [],
-  filter = "all",
-  lobbyPing = null;
-async function renderRooms() {
-  const began = performance.now();
-  const data = await fetchJSON("/api/rooms");
-  $("server-error").hidden = true;
-  lobbyPing = Math.round(performance.now() - began);
-  roomList = data.rooms;
-  $("practice-play").disabled = !roomList.find((r) => r.id === "practice")
-    ?.ready;
-  drawRooms();
-}
-function drawRooms() {
-  $("online-count").textContent =
-    roomList.reduce((n, r) => n + r.players, 0) + " in game";
-  $("lobby-ping").textContent = lobbyPing + " ms";
-  const main = roomList.find((r) => r.id === "arena");
-  if (main) {
-    $("next-description").textContent =
-      `${main.mapName} · Deathmatch · Maps rotate automatically`;
-    $("next-count").textContent =
-      `${main.players}/6 humans · ${main.bots} bots`;
-    $("quickplay").disabled = !main.ready || main.players >= 6;
-  }
-  let rooms = roomList.filter(
-    (r) =>
-      (filter === "all" || (filter === "practice") === r.practice) &&
-      r.name.toLowerCase().includes($("server-search").value.toLowerCase()) &&
-      (!$("with-players").checked || r.players > 0) &&
-      (!$("open-only").checked || r.players < 6),
-  );
-  if ($("server-sort").value === "players")
-    rooms.sort((a, b) => b.players - a.players);
-  $("rooms").replaceChildren(
-    ...rooms.map((r) => {
-      const tr = document.createElement("tr");
-      if (!r.practice) tr.className = "recommended";
-      const values = [
-        r.name,
-        r.mapName || mapNames[r.map],
-        r.practice ? "Practice" : "Deathmatch",
-        `${r.players} / 6`,
-        lobbyPing + " ms",
-      ];
-      values.forEach((value, i) => {
-        const td = document.createElement("td"),
-          span = document.createElement(i === 0 ? "strong" : "span");
-        span.textContent = value;
-        td.append(span);
-        if (i < 2) {
-          const detail = document.createElement("small");
-          detail.textContent =
-            i === 0
-              ? `${r.bots} ${r.bots === 1 ? "bot" : "bots"} · ${r.practice ? "Warm up" : "Always in the match"}`
-              : "Automatic rotation";
-          td.append(detail);
-        }
-        tr.append(td);
-      });
-      const td = document.createElement("td"),
-        actions = document.createElement("div");
-      actions.className = "v2-actions";
-      if (!r.practice) {
-        const b = document.createElement("button");
-        b.className = "v2-btn server-row-watch";
-        b.textContent = "Watch";
-        b.setAttribute("aria-label", "Watch " + r.name);
-        b.onclick = () => launch(r.id, true);
-        b.disabled = !r.ready;
-        actions.append(b);
-      }
-      const join = document.createElement("button");
-      join.className = "v2-btn primary server-row-join";
-      join.textContent = !r.ready
-        ? "Starting"
-        : r.players >= 6
-          ? "Full"
-          : "Join";
-      join.setAttribute("aria-label", "Join " + r.name);
-      join.disabled = !r.ready || r.players >= 6;
-      join.onclick = () => launch(r.id);
-      actions.append(join);
-      td.append(actions);
-      tr.append(td);
-      return tr;
-    }),
-  );
-  if (!rooms.length) {
-    const row = document.createElement("tr"),
-      cell = document.createElement("td");
-    cell.colSpan = 6;
-    cell.className = "empty";
-    cell.textContent = "No servers match your filters.";
-    row.append(cell);
-    $("rooms").append(row);
-  }
-  $("server-summary").textContent =
-    `${rooms.length} servers · Automatic map rotation`;
-}
-for (const el of document.querySelectorAll("[data-filter]"))
-  el.onclick = () => {
-    filter = el.dataset.filter;
-    for (const b of document.querySelectorAll("[data-filter]")) {
-      const active = b === el;
-      b.classList.toggle("active", active);
-      b.classList.toggle("is-active", active);
-      b.setAttribute("aria-pressed", active);
-    }
-    drawRooms();
+$("watch-play").onclick = () => launch(selectedRoom, true);
+$("mode-picker").onclick = () => $("modes").showModal();
+$("modes-close").onclick = () => $("modes").close();
+for (const button of document.querySelectorAll("[data-mode]"))
+  button.onclick = () => {
+    selectedRoom = button.dataset.mode === "perps" ? "ppk" : "arena";
+    save("arena-mode", selectedRoom);
+    updateMenu();
+    $("modes").close();
   };
-for (const id of ["server-search", "server-sort", "with-players", "open-only"])
-  $(id).addEventListener("input", drawRooms);
-$("how-to-play").onclick = () => $("help").showModal();
+renderWeaponTable(config.policy);
+$("view-rates").onclick = () => $("weapon-values").showModal();
+$("weapons-close").onclick = () => $("weapon-values").close();
+async function renderRooms() {
+  const data = await fetchJSON("/api/rooms");
+  roomList = data.rooms;
+  if (configError) throw configError;
+  $("server-error").hidden = true;
+  updateMenu();
+}
 $("help-close").onclick = () => $("help").close();
 for (const button of document.querySelectorAll("[data-help]"))
   button.onclick = () => $("help").showModal();
@@ -207,14 +145,15 @@ $("retry-server").onclick = () => {
   else renderRooms().catch(roomFailure);
 };
 function roomFailure(error) {
-  $("online-count").textContent = "Connection unavailable";
   $("quickplay").disabled = true;
   $("practice-play").disabled = true;
+  $("watch-play").disabled = true;
   $("server-error").hidden = false;
   $("server-error-message").textContent =
     "Cannot reach the game server. Retry in a moment.";
   diagnostics.record("directory", error.message);
 }
+updateMenu();
 function progress(text, percent, detail) {
   $("load-status").textContent = text;
   $("progress").value = percent;
@@ -357,7 +296,19 @@ async function connect(ticket) {
     ws.onmessage = (e) => {
       if (typeof e.data === "string") {
         const message = JSON.parse(e.data);
+        if (message.type === "match" && message.match?.room === roomId) {
+          state.match = message.match;
+          renderBoard();
+        }
         if (message.type === "authenticated") {
+          if (message.room !== roomId || message.watch !== watch) {
+            clearTimeout(timeout);
+            ws.close();
+            reject(
+              Error("Game ticket does not match this room or player role."),
+            );
+            return;
+          }
           clearTimeout(timeout);
           ready = true;
           diagnostics.record(
@@ -474,6 +425,9 @@ function openSettings() {
   document.exitPointerLock?.();
   requestScores();
   renderBoard();
+  document
+    .querySelector("#board-rows .you")
+    ?.scrollIntoView({ block: "nearest" });
   $("resume-button").focus({ preventScroll: true });
 }
 function captureReady() {
@@ -674,6 +628,19 @@ function playerInfo(id) {
   return info;
 }
 function renderBoard() {
+  if (state.match) {
+    renderMatch(state.match, state.stats.clientNum, {
+      watch,
+      playing: state.phase === "playing",
+      mapName: mapNames[state.match.map],
+    });
+    $("respawn").disabled = watch;
+    return;
+  }
+  $("board-mode").textContent = modeForRoom(
+    config.policy,
+    roomId,
+  ).name.toUpperCase();
   $("board-rule").textContent =
     `${config.fraglimit || 30} FRAGS · AUTOMATIC MAP ROTATION`;
   $("board-note").textContent =
@@ -718,13 +685,10 @@ async function start() {
     $("game").hidden = false;
     if (configError)
       throw Error("Game server configuration unavailable. Retry to reconnect.");
-    $("room-title").textContent =
-      roomId === "practice" ? "Bot practice" : "Tournament Arena";
+    $("room-title").textContent = modeForRoom(config.policy, roomId).name;
     $("game-mode").textContent = watch
       ? "WATCHING · 5s DELAY"
-      : roomId === "practice"
-        ? "PRACTICE"
-        : "DEATHMATCH";
+      : modeForRoom(config.policy, roomId).name.toUpperCase();
     if (watch)
       $("game-note").textContent =
         "Watching five seconds behind live. You are not in this match.";
@@ -906,9 +870,10 @@ async function start() {
       )
         openSettings();
       wasIntermission = state.stats.intermission;
-      $("board-status").textContent = state.stats.intermission
-        ? "ROUND COMPLETE · NEXT MAP STARTS AUTOMATICALLY"
-        : "MATCH CONTINUES WHILE THE MENU IS OPEN";
+      if (!state.match)
+        $("board-status").textContent = state.stats.intermission
+          ? "ROUND COMPLETE · NEXT MAP STARTS AUTOMATICALLY"
+          : "MATCH CONTINUES WHILE THE MENU IS OPEN";
       $("current-map").textContent =
         mapNames[state.stats.map] || state.stats.map;
       if (state.stats.map !== lastMap) {
@@ -935,7 +900,7 @@ async function start() {
         bridge.emit("ready", {
           online: true,
           roomId,
-          mode: roomId === "practice" ? "practice" : "deathmatch",
+          mode: modeForRoom(config.policy, roomId).id,
           watch,
         });
       }

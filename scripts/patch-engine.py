@@ -144,3 +144,32 @@ if 'Arena fixed bot population' not in s:
     }
 """+marker,1)
     p.write_text(s)
+
+# Dedicated scoring records are tagged with a private, per-process nonce and
+# hex-encoded. Arbitrary chat/userinfo console text cannot impersonate events.
+p=engine/'code/game/g_main.c';s=p.read_text()
+if 'Arena authenticated scoring records' not in s:
+    pos=s.index('void QDECL G_LogPrintf(')
+    marker='\tva_end( argptr );'
+    at=s.index(marker,pos)+len(marker)
+    s=s[:at]+r'''
+    /* Arena authenticated scoring records. Never publish the nonce in serverinfo. */
+    if (!Q_strncmp(fmt,"InitGame:",9) || !Q_strncmp(fmt,"ClientConnect:",14) ||
+        !Q_strncmp(fmt,"ClientUserinfoChanged:",22) || !Q_strncmp(fmt,"ClientDisconnect:",17) ||
+        !Q_strncmp(fmt,"Kill:",5) || !Q_strncmp(fmt,"Exit:",5)) {
+        char nonce[64], encoded[2048], record[2200];
+        const char *hex="0123456789abcdef";
+        int i, n=(int)strlen(string+7);
+        trap_Cvar_VariableStringBuffer("arena_logNonce",nonce,sizeof(nonce));
+        if (*nonce) {
+            for(i=0;i<n && i<1023;i++) {
+                unsigned char c=(unsigned char)string[7+i];
+                encoded[2*i]=hex[c>>4];encoded[2*i+1]=hex[c&15];
+            }
+            encoded[2*i]=0;
+            Com_sprintf(record,sizeof(record),"ARENA_RECORD %s %s\n",nonce,encoded);
+            trap_Print(record);
+        }
+    }
+'''+s[at:]
+    p.write_text(s)

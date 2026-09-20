@@ -5,7 +5,12 @@ const base = process.env.ARENA_TEST_URL || "http://127.0.0.1:8787";
 const browser = await chromium.launch({ channel: "chrome", headless: true });
 const results = [];
 try {
-  for (const fault of ["missing-pack", "corrupt-pack", "expired-ticket"]) {
+  for (const fault of [
+    "missing-pack",
+    "corrupt-pack",
+    "expired-ticket",
+    "room-mismatch",
+  ]) {
     const page = await browser.newPage();
     if (fault === "missing-pack")
       await page.route("**/assets/arena.pk3?*", (r) =>
@@ -22,6 +27,13 @@ try {
           body: JSON.stringify({ ticket: "expired.invalid" }),
         }),
       );
+    if (fault === "room-mismatch")
+      await page.route("**/api/demo/ticket", async (route) => {
+        const response = await route.fetch({
+          postData: JSON.stringify({ room: "ppk", name: "Mismatch" }),
+        });
+        await route.fulfill({ response });
+      });
     await page.goto(base + "/play?room=atrium&name=FaultTest");
     await page.waitForFunction(() => window.arena?.phase === "error", null, {
       timeout: 60000,
@@ -33,7 +45,9 @@ try {
         ? /downloaded/
         : fault === "corrupt-pack"
           ? /verification failed/
-          : /INVALID_TICKET/,
+          : fault === "room-mismatch"
+            ? /does not match/
+            : /INVALID_TICKET/,
     );
     assert.ok(
       await page.getByRole("button", { name: "Try again" }).isVisible(),

@@ -19,9 +19,11 @@ npm ci
 npm start
 ```
 
-Open <http://127.0.0.1:8787>. Join the arena or bot practice. Maps are chosen by the server and rotate automatically. Invite another browser to the same server. WASD moves, mouse aims, left click fires, Space jumps, 1–9 select weapons, Tab shows scores, and Escape opens settings. Click Play to capture the mouse. Escape opens the Tournament menu; Resume returns to play. The menu includes sensitivity, sound, music, volume, respawn and reconnect. Fullscreen is in the game toolbar (or press F).
+Open <http://127.0.0.1:8787>. Choose **Game mode → Frag Race or PPK**, then **Play**; bot practice is separate. Maps are chosen by the server and rotate automatically. Invite another browser to the same server. WASD moves, mouse aims, left click fires, Space jumps, 1–9 select weapons, Tab shows scores, and Escape opens settings. Click Play to capture the mouse. Escape opens the Tournament menu; Resume returns to play. The menu includes sensitivity, sound, music, volume, respawn and reconnect. Fullscreen is in the game toolbar (or press F).
 
-One deathmatch room accepts up to six human players; six bots stay in the match alongside human players. The separate practice room also keeps six bots and can also be joined by another demo player. Rounds end at 30 frags or 15 minutes. After a ten-second intermission, The Atrium and Reactor alternate without a vote or ready-up requirement. Watch mode enforces a five-second delay in the server gateway and prevents joining a player team. The initial media download is about 87 MiB; subsequent visits use verified browser-cached assets.
+Each mode has its own room for up to six humans and six bots. The separate practice room also keeps six bots and can also be joined by another demo player. Frag Race ends at 30 frags or 15 minutes; PPK runs for 15 minutes with weapon-based points and no frag limit. After a ten-second intermission, The Atrium and Reactor alternate without a vote or ready-up requirement. Watch mode enforces a five-second delay in the server gateway and prevents joining a player team. The initial media download is about 87 MiB; subsequent visits use verified browser-cached assets.
+
+[Mode rules and weapon table](docs/game-modes.md): Frag Race previews $3 / $2 / $1 for the top three; PPK uses 1–5 weapon points, with the requested plasma $0.02 and shotgun $0.10 demo cash examples. Other weapon cash rates are unconfigured. Native server events determine standings. All money and points are demo previews; there is no wallet or payout system.
 
 The launcher is standalone: the Tournament name, original gold game menus, local fonts and no links or navigation to the platform website. There is no account or wallet system to set up. **Debug** in the launcher, toolbar or settings shows FPS, latency, mouse state, verified assets, packet counters and server health. Download a redacted JSON report when reporting a problem. Escape closes Debug; Resume returns from settings to the game.
 
@@ -57,6 +59,7 @@ npm start                         # separate terminal
 npm run test:browser
 npm run test:faults
 npm run test:standalone
+npm run test:modes
 node tests/capacity.mjs
 npm run test:menus               # actual Chrome mouse capture through agent-browser
 ```

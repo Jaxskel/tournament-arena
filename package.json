@@ -15,7 +15,8 @@
     "test:menus": "node tests/menus.mjs",
     "test:rotation": "node tests/rotation.mjs",
     "test:standalone": "node tests/standalone.mjs",
-    "test:capacity": "node tests/capacity.mjs"
+    "test:capacity": "node tests/capacity.mjs",
+    "test:modes": "node tests/modes.mjs"
   },
   "dependencies": {
     "ws": "8.21.3"

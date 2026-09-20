@@ -7,12 +7,16 @@ This is a separate playable Quake III / OpenArena game with its own standalone T
 [Open the demo](https://prevention-crossing-echo-snowboard.trycloudflare.com/).
 
 1. Open that link on two desktop browsers or computers. Enter different player names.
-2. Both join **TOURNAMENT ARENA**. Click **CLICK TO PLAY** to capture the mouse.
+2. Both choose the same **Game mode** (Frag Race or PPK), then press **Play**. Click **CLICK TO PLAY** to capture the mouse.
 3. WASD moves, mouse aims, left click shoots, Space jumps, and 1–9 switch weapons.
 4. Escape opens the Tournament-style scoreboard/settings. Each player should appear on the other's scoreboard. Click **RESUME GAME** to return.
 5. Six bots remain in the match alongside up to six humans. Maps alternate automatically between The Atrium and Reactor. Use **Watch** for a feed delayed by five seconds, or **Bot practice** to warm up.
 
 The first visit downloads approximately 87 MiB. Subsequent visits use verified cached assets. The public link is a temporary tunnel: the host Mac, game server and tunnel must stay running. A permanent game-server deployment is still needed before launch.
+
+## Game modes
+
+Frag Race: first to 30 native frags or 15 minutes, with top-three demo prize previews. PPK: 15-minute rounds, weapon-dependent points and the requested plasma 2¢ / shotgun 10¢ cash previews. Practice: no points. Gold in-game standings show rank, kills/deaths and points or prizes. All cash remains a preview; [full rules](game-modes.md).
 
 ## What is ready to demonstrate
 

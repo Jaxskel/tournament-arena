@@ -2,7 +2,7 @@
 
 ## Local process
 
-`npm start` serves the launcher, browser engine, assets and `/ws` on `127.0.0.1:8787`. It starts two native dedicated servers on loopback UDP ports 27960 and 27962. SIGINT/SIGTERM shuts down the child servers. Do not expose those UDP ports publicly; all browser admission must pass through the gateway.
+`npm start` serves the launcher, browser engine, assets and `/ws` on `127.0.0.1:8787`. It starts three native dedicated servers on loopback UDP ports 27960 (Frag Race), 27962 (practice), and 27964 (PPK). SIGINT/SIGTERM shuts down the child servers. Do not expose those UDP ports publicly; all browser admission must pass through the gateway.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ The multi-stage Dockerfile compiles pinned native/WebAssembly builds and copies 
 
 The container recipe has not been executed on the delivery machine because its Docker daemon is unavailable. The actual macOS native and Emscripten builds were executed successfully. Validate Linux build/runtime and resource limits on the hosting target before deploying.
 
-A health endpoint returns 200 only while both rooms are initialized. The server does not automatically restart failed room processes; use a process supervisor or container restart and investigate failures. Persist/rotate runtime logs, monitor CPU/memory and restrict maximum public connections. No live account secrets are required or shipped.
+A health endpoint returns 200 only while all three rooms are initialized. The server does not automatically restart failed room processes; use a process supervisor or container restart and investigate failures. Persist/rotate runtime logs, monitor CPU/memory and restrict maximum public connections. No live account secrets are required or shipped.
 
 ## Share a temporary demo
 

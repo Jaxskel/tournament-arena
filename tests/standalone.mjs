@@ -10,10 +10,10 @@ try {
   const p = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   p.on("request", (r) => requests.push(r.url()));
   await p.goto(base);
-  await p.waitForSelector("#rooms tr");
+  await p.waitForFunction(() => !document.getElementById("quickplay").disabled);
   assert.equal(await p.locator('a[href*="tournament.com"]').count(), 0);
   assert.equal(await p.getByText("Sign in", { exact: true }).count(), 0);
-  assert.equal(await p.locator("#rooms tr").count(), 2);
+  assert.equal(await p.locator("#selected-mode").textContent(), "FRAG RACE");
   await p.getByRole("button", { name: "Debug", exact: true }).first().click();
   await p.waitForFunction(() =>
     document

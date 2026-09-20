@@ -11,7 +11,7 @@ Node HTTP / WS gateway :8787
         │ unique loopback UDP socket per admitted session
         │ private admission file: observer flag, name, session ID
         ▼
-ioq3ded :27960 / :27962
+ioq3ded :27960 / :27962 / :27964
         │ native authoritative simulation and patched game QVM
         └─ server logs → diagnostic JSONL events (no rewards)
 ```
@@ -36,7 +36,7 @@ The renderer uses full texture detail, trilinear filtering, optional anisotropy,
 
 ## Operational limits
 
-One Node process launches two dedicated servers on the same machine. Each room keeps six bots alongside up to six humans. The game QVM checks the fixed bot target every ten seconds, independent of human population. Each native server has sixteen slots: twelve combatants and four delayed observers. Gateway admission separately caps humans at six and observers at four. There is no autoscaling, distributed room allocator, persistent account store, production ticket service or hosted settlement system. Diagnostics append to `runtime/events.jsonl` and room logs; add log rotation for long-running hosting. The gateway's single-use ticket set and signing secret are process-local; restarting invalidates demo tickets. This design is suitable for a demo and a concrete platform adapter starting point, not a claim of production readiness.
+One Node process launches three dedicated servers on the same machine. Each room keeps six bots alongside up to six humans. The game QVM checks the fixed bot target every ten seconds, independent of human population. Each native server has sixteen slots: twelve combatants and four delayed observers. Gateway admission separately caps humans at six and observers at four. There is no autoscaling, distributed room allocator, persistent account store, production ticket service or hosted settlement system. Diagnostics append to `runtime/events.jsonl` and room logs; add log rotation for long-running hosting. The gateway's single-use ticket set and signing secret are process-local; restarting invalidates demo tickets. This design is suitable for a demo and a concrete platform adapter starting point, not a claim of production readiness.
 
 ## Tournament menu and rotation
 
@@ -45,3 +45,7 @@ The standalone HTML launcher and gold game menu use original local styles and Ba
 ## Browser diagnostics
 
 Debug is available from the launcher, toolbar and settings menu. It shows verified asset loading/cache status, native FPS and latency, transport packet counters, mouse state and server health. Reports include a bounded event log; identity, chat, tokens, positions and URL query strings are excluded or redacted. Escape closes Debug back to the settings menu; Resume is an explicit capture gesture. Configuration and directory failures show retry controls, and asset requests have bounded timeouts.
+
+## Frag Race and PPK
+
+Mode rules and weapon tiers live in `server/modes.mjs`; `server/match.mjs` tracks native kills, deaths, points and demo prize previews. Native `G_LogPrintf` emits selected event types as hex-encoded records with a private per-room tag. Only authenticated records enter room tracking and scoring; chat and arbitrary console output remain diagnostics. The tag is a private server cvar, not a serverinfo field or browser configuration. Match results freeze on native Exit and reset on InitGame. WebSocket standings snapshots use the same five-second observer queue as game packets. No client score submission or settlement endpoint exists. Detailed rules and provisional Quake mappings: [game-modes.md](game-modes.md).

@@ -19,120 +19,52 @@
       </nav>
     </header>
     <main id="main">
-      <div id="lobby" class="lobby">
-        <section class="hero">
-          <div class="hero-image" aria-hidden="true"></div>
-          <div class="hero-copy">
-            <p class="eyebrow">
-              <span class="live-dot"></span> BROWSER ARENA SHOOTER
-            </p>
-            <h1>TOURNAMENT</h1>
-            <p class="hero-description">
-              Six bots. Bring your friends.<br />Weapons, pickups, and non-stop
-              deathmatch.
-            </p>
-            <div class="hero-actions">
-              <button id="quickplay" class="v2-btn primary" disabled>
-                ENTER ARENA <span>↗</span></button
-              ><button id="practice-play" class="v2-btn">BOT PRACTICE</button>
-            </div>
-            <p class="hero-note">
-              DESKTOP · KEYBOARD &amp; MOUSE · NO ACCOUNT NEEDED
-            </p>
-          </div>
-          <div class="hero-foot">
-            <span id="next-description">Automatic map rotation</span
-            ><span id="next-count">Connecting…</span
-            ><span id="lobby-ping">—</span>
-          </div>
-        </section>
-        <div id="server-error" role="status" hidden>
-          <span id="server-error-message"></span
-          ><button id="retry-server" class="v2-btn">Retry connection</button
-          ><button class="v2-btn" data-diagnostics>Debug</button>
-        </div>
-        <section class="rooms-section" aria-label="Server browser">
-          <div class="section-title">
-            <div>
-              <p class="eyebrow">PLAY YOUR WAY</p>
-              <h2>Join a match</h2>
-            </div>
-            <span id="online-count">Connecting…</span>
-          </div>
-          <div class="server-mode-controls">
-            <div class="v2-mode-tabs" aria-label="Game mode">
-              <button data-filter="all" class="active" aria-pressed="true">
-                All matches</button
-              ><button data-filter="deathmatch" aria-pressed="false">
-                Deathmatch</button
-              ><button data-filter="practice" aria-pressed="false">
-                Practice
-              </button>
-            </div>
-            <button id="how-to-play" class="v2-text-btn">Controls ↗</button>
-          </div>
-          <div class="server-filters">
-            <label class="server-filter"
-              ><span>YOUR NAME</span
-              ><input
-                id="player-name"
-                maxlength="20"
-                autocomplete="nickname"
-                value="Ranger" /></label
-            ><label class="server-filter grow"
-              ><span>FIND A MATCH</span
-              ><input
-                id="server-search"
-                placeholder="Search matches"
-                autocomplete="off" /></label
-            ><label class="server-filter"
-              ><span>SORT BY</span
-              ><select id="server-sort">
-                <option value="recommended">Recommended</option>
-                <option value="players">Most players</option>
-              </select></label
-            >
-          </div>
-          <div class="server-list-summary">
-            <div>
-              <label
-                ><input id="with-players" type="checkbox" /> With humans</label
-              ><label
-                ><input id="open-only" type="checkbox" /> Open slots only</label
-              >
-            </div>
-            <span id="server-summary">Loading matches…</span>
-          </div>
-          <div class="v2-room-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>MATCH</th>
-                  <th>CURRENT MAP</th>
-                  <th>MODE</th>
-                  <th>HUMANS</th>
-                  <th>LATENCY</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="rooms"></tbody>
-            </table>
-          </div>
-          <p class="match-note">
-            Six bots stay in each match, alongside up to six human players. Maps
-            rotate automatically.
+      <div id="lobby" class="lobby simple-lobby">
+        <section class="play-menu">
+          <p class="eyebrow">IOQUAKE3 + OPENARENA</p>
+          <h1>TOURNAMENT</h1>
+          <p class="menu-tagline">Enter the arena. Climb the board.</p>
+          <label class="name-field" for="player-name">PLAYER NAME</label>
+          <input
+            id="player-name"
+            maxlength="20"
+            autocomplete="nickname"
+            value="Ranger"
+          />
+          <button id="quickplay" class="play-now" disabled>PLAY</button>
+          <button id="mode-picker" class="mode-picker">
+            GAME MODE <strong id="selected-mode">FRAG RACE</strong
+            ><span>CHANGE ›</span>
+          </button>
+          <p id="mode-description" class="mode-description"></p>
+          <div id="mode-prizes" class="mode-prizes"></div>
+          <p id="next-description" class="menu-server">
+            Connecting to the arena…
           </p>
+          <div class="menu-actions">
+            <button id="practice-play" class="v2-text-btn">BOT PRACTICE</button
+            ><button id="watch-play" class="v2-text-btn">WATCH</button
+            ><button id="view-rates" class="v2-text-btn">WEAPON VALUES</button>
+          </div>
+          <p class="demo-note">
+            DEMO · Points and dollar amounts are previews. No real payouts.
+          </p>
+          <div id="server-error" role="status" hidden>
+            <span id="server-error-message"></span
+            ><button id="retry-server" class="v2-btn">Retry connection</button
+            ><button class="v2-btn" data-diagnostics>Debug</button>
+          </div>
         </section>
         <footer class="arena-footer">
-          <span>TOURNAMENT · POWERED BY IOQUAKE3 + OPENARENA</span
+          <span>SIX BOTS · UP TO SIX PLAYERS · AUTOMATIC MAP ROTATION</span
           ><a href="/credits">Credits &amp; source</a>
         </footer>
       </div>
       <section id="game" hidden>
         <div class="arena-toolbar">
-          <a class="v2-text-btn" href="/">← Servers</a
+          <a class="v2-text-btn" href="/">← Menu</a
           ><strong id="room-title">Tournament Arena</strong
-          ><span id="game-mode">DEATHMATCH</span><span id="current-map"></span
+          ><span id="game-mode">FRAG RACE</span><span id="current-map"></span
           ><span class="arena-spacer"></span><span id="metrics"></span
           ><button id="settings-button" class="v2-btn">Settings</button
           ><button class="v2-btn" data-diagnostics>Debug</button
@@ -146,14 +78,24 @@
             tabindex="0"
             aria-label="Quake arena game"
           ></canvas>
+          <div id="match-hud" class="match-hud" hidden>
+            <div class="hud-heading">
+              <strong id="hud-mode"></strong><span id="hud-clock"></span>
+            </div>
+            <div id="hud-rule"></div>
+            <ol id="hud-leaders"></ol>
+            <div id="hud-personal"></div>
+            <small id="hud-demo">DEMO · NO REAL PAYOUTS</small>
+          </div>
+          <div id="kill-reward" class="kill-reward" hidden></div>
           <div id="loading" class="arena-loading">
             <div class="brand-word">TOURNAMENT</div>
-            <h2 id="load-title">ARENA DEATHMATCH</h2>
+            <h2 id="load-title">TOURNAMENT</h2>
             <p id="load-status">Preparing engine…</p>
             <progress id="progress" max="100" value="0"></progress
             ><small id="load-detail"></small
             ><button id="retry" class="v2-btn primary" hidden>Try again</button
-            ><a href="/">Back to servers</a>
+            ><a href="/">Back to menu</a>
           </div>
           <div id="capture" hidden>
             <button id="capture-button" type="button">CLICK TO PLAY</button
@@ -172,7 +114,7 @@
             <div class="panel">
               <div class="head">
                 <div class="brand-word">TOURNAMENT</div>
-                <div class="mode" id="board-mode">ARENA DEATHMATCH</div>
+                <div class="mode" id="board-mode">FRAG RACE</div>
                 <div class="rule" id="board-rule">
                   30 FRAGS · AUTOMATIC MAP ROTATION
                 </div>
@@ -183,6 +125,7 @@
                   MATCH CONTINUES WHILE THE MENU IS OPEN
                 </div>
               </div>
+              <div id="board-podium" class="board-podium" hidden></div>
               <div class="rows" id="board-rows">
                 <div class="empty">Loading standings…</div>
               </div>
@@ -239,6 +182,40 @@
         <p id="game-note">WASD MOVE · MOUSE AIM · SPACE JUMP · ESC MENU</p>
       </section>
     </main>
+    <dialog id="modes" aria-labelledby="modes-title">
+      <div class="dialog-heading">
+        <h2 id="modes-title">Game mode</h2>
+        <button id="modes-close" class="v2-btn">Close</button>
+      </div>
+      <button class="mode-card" data-mode="fragrace">
+        <strong>FRAG RACE</strong
+        ><span>First to 30 frags or 15 minutes. Top three finishers.</span
+        ><small>PRIZE PREVIEW · $3 / $2 / $1</small>
+      </button>
+      <button class="mode-card" data-mode="perps">
+        <strong>PPK</strong
+        ><span>Points per kill. Score 1–5 points depending on your weapon.</span
+        ><small>15-MINUTE ROUNDS · WEAPON-BASED SCORING</small>
+      </button>
+      <p class="demo-note">
+        Demo scoring only. Tournament accounts and payouts are not connected.
+      </p>
+    </dialog>
+    <dialog id="weapon-values" aria-labelledby="weapons-title">
+      <div class="dialog-heading">
+        <h2 id="weapons-title">PPK weapon values</h2>
+        <button id="weapons-close" class="v2-btn">Close</button>
+      </div>
+      <p>
+        Weapon points follow the Doom tiers, adapted to Quake. Extra Quake
+        weapon mappings are provisional.
+      </p>
+      <div id="weapon-table"></div>
+      <p class="demo-note">
+        Dollar values are demo examples, not payouts. — means no cash rate is
+        configured. Practice scores nothing.
+      </p>
+    </dialog>
     <dialog id="help">
       <button id="help-close" class="v2-btn">Close</button>
       <h2>How to play</h2>
@@ -250,6 +227,11 @@
         Maps rotate after each match. Escape opens the Tournament menu; Resume
         game returns you to play. The match keeps running while you change
         settings.
+      </p>
+      <p>
+        Frag Race ranks players by frags and previews the top-three prizes. PPK
+        ranks by weapon points. Six bots join each room; bots do not receive
+        prize previews. Practice scores no points.
       </p>
       <p>Use a desktop browser and allow mouse capture when prompted.</p>
     </dialog>

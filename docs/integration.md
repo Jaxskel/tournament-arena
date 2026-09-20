@@ -4,13 +4,13 @@ The game runs independently with guest admission. The visible launcher has no li
 
 ## Implemented compatibility
 
-The game page supports `/play?embed=1&room=arena&watch=0`. Demo rooms are `arena` and `practice`; legacy `atrium` and `reactor` links resolve to the same rotating `arena` room; `watch=1` requests a delayed observer session. `mode` and `server` may appear in a Tournament URL but are not treated as authority: room configuration controls the game mode and the browser always connects to its own `/ws` gateway. Arbitrary URL-supplied WebSocket or UDP destinations are deliberately not used. Map Tournament room identifiers to approved server configurations during integration.
+The game page supports `/play?embed=1&room=arena&watch=0`. Demo rooms are `arena` (Frag Race), `ppk` (PPK), and `practice`; legacy `atrium` and `reactor` links resolve to the same rotating `arena` room; `watch=1` requests a delayed observer session. `mode` and `server` may appear in a Tournament URL but are not treated as authority: room configuration controls the game mode and the browser always connects to its own `/ws` gateway. Arbitrary URL-supplied WebSocket or UDP destinations are deliberately not used. Map Tournament room identifiers to approved server configurations during integration.
 
 The iframe bridge emits these messages to the exact approved parent origin:
 
 ```js
 { type: 'd2dm', event: 'need-token', practice: false }
-{ type: 'd2dm', event: 'ready', online: true, roomId: 'arena', mode: 'deathmatch', watch: false }
+{ type: 'd2dm', event: 'ready', online: true, roomId: 'arena', mode: 'fragrace', watch: false }
 { type: 'd2dm', event: 'kicked', reason: 'Connection closed', code: 1006 }
 ```
 
@@ -34,3 +34,7 @@ Client commands drive input; the native game determines movement, damage, pickup
 6. **Staging sign-off:** verify duplicate/reordered delivery, server crashes, round replay, reconnect identity, account exclusions, forged/expired/revoked tickets, invalid client actions and reward reconciliation. Confirm spectator delay across match transitions and the existing spectator UI.
 
 Keep rewards disabled until all six are complete. No client `postMessage`, HTTP event or submitted score should award points or money. This delivery does not call production settlement, account or anti-cheat endpoints.
+
+## Demo scoring boundary
+
+Frag Race/PPK previews are implemented from native tagged events, with configuration in `server/modes.mjs`. They deliberately do not implement wallets, balance deductions, transfer fees, daily leaderboards or cash settlement. Plasma $0.02 and shotgun $0.10 are project-owner examples, not certified platform payout rates. Use [game-modes.md](game-modes.md) to map production policy and review tie, bot, reconnect and round rules before integration.

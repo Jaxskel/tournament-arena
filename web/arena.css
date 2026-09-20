@@ -891,3 +891,378 @@ dialog h2 {
     padding: 7px;
   }
 }
+/* Compact game menu and Tournament-style live standings. */
+.simple-lobby {
+  max-width: 850px;
+  padding-top: 16px;
+}
+.play-menu {
+  width: min(480px, 100%);
+  margin: 12px auto 0;
+  border: 1px solid #78623a;
+  background: linear-gradient(#302917e8, #11120ffa 60%);
+  padding: 36px 38px;
+  text-align: center;
+  box-shadow: 0 16px 100px #0006;
+}
+.play-menu h1 {
+  font: 600 64px/0.95 Condensed;
+  margin: 18px 0 14px;
+  letter-spacing: 3px;
+  color: #ffdc77;
+}
+.menu-tagline {
+  color: #b6ad9a;
+  margin: 0 0 32px;
+}
+.name-field {
+  display: block;
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #c0b39b;
+  margin-bottom: 8px;
+}
+.play-menu #player-name {
+  width: 100%;
+  margin-bottom: 16px;
+}
+.play-now {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(#f0cb65, #bd9138);
+  border: 1px solid #ffdf8d;
+  color: #1b160e;
+  font: 600 33px Condensed;
+  letter-spacing: 6px;
+}
+.mode-picker {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: #201c13;
+  border: 1px solid #6b5730;
+  color: #ad9d7f;
+  padding: 16px 12px;
+  margin-top: 12px;
+  font: 600 10px Barlow;
+  letter-spacing: 1px;
+}
+.mode-picker strong {
+  font: 600 19px Condensed;
+  color: #f2d698;
+  flex: 1;
+}
+.mode-picker > span {
+  font-size: 9px;
+}
+.mode-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #c2bba9;
+  min-height: 42px;
+  margin: 20px 0 10px;
+}
+.mode-prizes {
+  font: 600 13px Condensed;
+  letter-spacing: 1px;
+  color: #f2cb6a;
+}
+.menu-server {
+  font-size: 11px;
+  color: #948d7d;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+.menu-actions {
+  border-top: 1px solid #534329;
+  padding-top: 18px;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  font: 600 10px Barlow;
+}
+.demo-note {
+  font-size: 10px;
+  line-height: 1.6;
+  color: #a29881;
+  margin-top: 24px;
+}
+.simple-lobby .arena-footer {
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: 9px;
+  margin-top: 20px;
+}
+.mode-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 22px;
+  margin: 16px 0;
+  background: #242018;
+  border: 1px solid #7b653b;
+}
+.mode-card strong {
+  font: 600 27px Condensed;
+  color: #f2cb6a;
+  letter-spacing: 2px;
+}
+.mode-card span {
+  font-size: 14px;
+  color: #cdc4b1;
+}
+.mode-card small {
+  font: 600 10px Barlow;
+  letter-spacing: 1px;
+  color: #b59d6c;
+}
+.weapon-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.weapon-table th,
+.weapon-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #68543144;
+}
+.weapon-table th {
+  font: 600 11px Condensed;
+  letter-spacing: 1px;
+  color: #ccb377;
+}
+.weapon-table td {
+  font-size: 14px;
+}
+.weapon-table td:nth-child(n + 2) {
+  color: #efd58e;
+}
+.match-hud {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 280px;
+  background: #17130ad9;
+  border: 1px solid #82683499;
+  box-shadow: 0 4px 20px #0008;
+  padding: 12px;
+  color: #f5ecd7;
+  pointer-events: none;
+  font: 12px Barlow;
+}
+.hud-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #ffda70;
+  font: 600 19px Condensed;
+  letter-spacing: 1px;
+}
+#hud-clock {
+  font-variant-numeric: tabular-nums;
+}
+#hud-rule {
+  font-size: 9px;
+  color: #bdac8b;
+  letter-spacing: 1px;
+  padding: 6px 0;
+  border-bottom: 1px solid #82683466;
+}
+#hud-leaders {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+#hud-leaders li {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  gap: 12px;
+}
+#hud-leaders li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#hud-leaders li strong {
+  white-space: nowrap;
+  color: #e1c884;
+}
+#hud-personal {
+  color: #ffda70;
+  font-size: 11px;
+  padding-top: 8px;
+  border-top: 1px solid #82683466;
+}
+#hud-demo {
+  display: block;
+  color: #a39880;
+  font: 8px Barlow;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+}
+.kill-reward {
+  position: absolute;
+  right: 20px;
+  top: 24px;
+  max-width: 320px;
+  background: #201708de;
+  border: 1px solid #e3b644;
+  padding: 15px 20px;
+  color: #ffdc79;
+  font: 600 20px Condensed;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+#board .medal {
+  display: inline-flex;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  color: #221c0f;
+  font: 600 13px Condensed;
+}
+.medal-1 {
+  background: radial-gradient(at 30% 20%, #fff5b1, #e4b53d);
+}
+.medal-2 {
+  background: radial-gradient(at 30% 20%, #f4f6fa, #8c939d);
+}
+.medal-3 {
+  background: radial-gradient(at 30% 20%, #ffdebd, #b16c35);
+}
+#board .reward-value {
+  color: #f8d978;
+  white-space: nowrap;
+}
+#board td.nm {
+  max-width: 155px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#board .player-tag {
+  font-size: 8px;
+  color: #a69c86;
+}
+.board-podium {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #725c31;
+}
+.podium-place {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #786237;
+  text-align: center;
+}
+.podium-place strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ffdc79;
+}
+.podium-place small,
+.podium-place span {
+  font: 600 11px Condensed;
+  letter-spacing: 1px;
+}
+.podium-place span {
+  color: #b8ab8d;
+}
+@media (max-width: 600px) {
+  .play-menu {
+    padding: 28px 20px;
+  }
+  .play-menu h1 {
+    font-size: 50px;
+  }
+  .match-hud {
+    top: 8px;
+    left: 8px;
+    width: 220px;
+    padding: 8px;
+  }
+  .kill-reward {
+    top: 230px;
+    right: 10px;
+    font-size: 16px;
+  }
+  #board td.nm {
+    max-width: 100px;
+  }
+  #board td {
+    font-size: 11px;
+    padding: 6px;
+  }
+  #board th {
+    font-size: 9px;
+  }
+}
+@media (max-height: 800px) {
+  .game-header {
+    height: 70px;
+  }
+  .simple-lobby {
+    padding-top: 0;
+  }
+  .play-menu {
+    padding: 22px 30px;
+    margin-top: 0;
+  }
+  .play-menu h1 {
+    font-size: 48px;
+    margin: 12px 0;
+  }
+  .menu-tagline {
+    margin: 0 0 18px;
+    font-size: 13px;
+  }
+  .play-menu #player-name {
+    padding: 9px;
+    margin-bottom: 12px;
+  }
+  .play-now {
+    padding: 10px;
+    font-size: 28px;
+  }
+  .mode-picker {
+    padding: 12px 10px;
+  }
+  .mode-description {
+    margin: 12px 0 8px;
+    min-height: 0;
+    font-size: 12px;
+  }
+  .mode-prizes {
+    font-size: 11px;
+  }
+  .menu-server {
+    margin: 12px 0;
+    font-size: 10px;
+  }
+  .menu-actions {
+    padding-top: 12px;
+    font-size: 9px;
+    gap: 14px;
+  }
+  .play-menu .demo-note {
+    margin-top: 14px;
+    font-size: 9px;
+  }
+  .simple-lobby .arena-footer {
+    margin: 10px 0;
+    padding: 12px 0;
+  }
+}

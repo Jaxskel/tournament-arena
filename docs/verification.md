@@ -2,6 +2,12 @@
 
 Latest standalone build checked on 2026-09-20 on an Apple M4 Pro running macOS 26.5.2. The native server, patched game QVMs and browser WebAssembly client run the real ioquake3 engine. Generated evidence lives in `docs/evidence/` in the prepared deliverable; it is excluded from Git. All checks below have runnable scripts in `tests/`.
 
+## Frag Race / PPK update
+
+The compact Play/mode menu, native PPK room, configured weapon-value table, two independent PPK players, live weapon-point rankings, Frag Race prize preview, practice isolation and native score tracking pass `npm run test:modes`. PPK runs without a frag limit; cash displays remain demo previews. Tagged native records and rejected client score messages are covered by the source tests. New files: `evidence/modes-results.json`, `evidence/ppk-standings.png`, `evidence/frag-race-standings.png` and `evidence/weapon-values.png`.
+
+The final native build also passed two automatic map transitions with seven participants: both frozen result tables exactly matched Quake's native scoreboard. The connected human and six bots remained throughout. A fresh public HTTPS multiplayer run loaded in 9.08 seconds, sampled 60 FPS five times, and measured 5,023 ms observer lag with no JavaScript errors (`evidence/modes-public-multiplayer.json`). These supplement the earlier baseline below.
+
 ## Executed checks
 
 - **Multiplayer:** two isolated Chrome browser contexts join the same native room and see each other in the native scoreboard. Movement, death/respawn, reconnect with a fresh ticket, practice and the optional iframe ticket lifecycle pass.
@@ -10,7 +16,7 @@ Latest standalone build checked on 2026-09-20 on an Apple M4 Pro running macOS 2
 - **Standalone launcher and debugger:** there are no links or requests to the platform website. Debug checks server health, reports verified assets and real packet counters, and downloads a redacted JSON report. A failed room directory recovers through Retry; a failed configuration request exposes an error, retry and Debug controls.
 - **Failure handling:** browser tests simulate unavailable and corrupted assets, rejected admission, WebSocket closure, engine disconnect and missing parent tickets. Each produces a recoverable error rather than a false playing state.
 - **Spectators:** the local browser run measured 5,025 ms behind live. Gateway buffering is independently timed. Modified observer team, name, role and cheat commands do not grant a playing role or change the server-bound identity.
-- **Automated source tests:** all fourteen Node tests pass, including ticket tampering/expiry/replay, origin and parent checks, actual UDP forwarding, denied remote console commands, observer limits, diagnostic redaction and map/bot bookkeeping. Production dependency audit reports zero known vulnerabilities. Python and shell build-script syntax checks pass.
+- **Automated source tests:** all twenty-two Node tests pass, including ticket tampering/expiry/replay, origin and parent checks, actual UDP forwarding, denied remote console commands, observer limits, diagnostic redaction and map/bot bookkeeping. Production dependency audit reports zero known vulnerabilities. Python and shell build-script syntax checks pass.
 - **Visible opponents:** the pack retains Sarge's shared Grism textures and packaging rejects unresolved player-skin dependencies. Existing red Sarge models provide contrast. No remastered model set or new commercial media is included.
 
 ## Final public and rotation checks
@@ -39,6 +45,7 @@ With the prepared game running on port 8787:
 npm test
 npm run test:browser
 npm run test:standalone
+npm run test:modes
 npm run test:capacity
 npm run test:faults
 npm run test:menus

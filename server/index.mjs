@@ -13,6 +13,9 @@ import {
   parseStartedMap,
   trackBotSlots,
 } from "./rooms.mjs";
+import { publicPolicy, modeForRoom } from "./modes.mjs";
+import { decodeNativeRecord } from "./native-record.mjs";
+import { MatchTracker } from "./match.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PORT || 8787),
   HOST = process.env.HOST || "127.0.0.1";
@@ -26,11 +29,12 @@ const origins = (process.env.ARENA_ALLOWED_ORIGINS || "")
 const definitions = [
   {
     id: "arena",
-    name: "TOURNAMENT ARENA",
+    name: "Frag Race",
     map: "oa_dm1",
     port: 27960,
     bots: 6,
   },
+  { id: "ppk", name: "PPK", map: "oa_dm1", port: 27964, bots: 6 },
   {
     id: "practice",
     name: "Bot practice",
@@ -66,12 +70,20 @@ for (const def of definitions) {
     ...def,
     port: def.port + Number(process.env.ARENA_PORT_OFFSET || 0),
     sessionDir,
+    logNonce: randomBytes(24).toString("hex"),
     ready: false,
     round: 0,
     botSlots: new Set(),
+    tracker: new MatchTracker(def.id, {
+      fraglimit: Number(
+        process.env.ARENA_FRAGLIMIT ?? modeForRoom(def.id).fraglimit,
+      ),
+      minutes: Number(process.env.ARENA_TIMELIMIT || 15),
+    }),
   };
   rooms.set(def.id, room);
   const settings = {
+    arena_logNonce: room.logNonce,
     com_basegame: "baseq3",
     dedicated: 2,
     net_ip: "127.0.0.1",
@@ -89,7 +101,7 @@ for (const def of definitions) {
     g_gametype: 0,
     g_log: "games.log",
     g_logSync: 1,
-    fraglimit: process.env.ARENA_FRAGLIMIT || 30,
+    fraglimit: process.env.ARENA_FRAGLIMIT ?? modeForRoom(def.id).fraglimit,
     timelimit: process.env.ARENA_TIMELIMIT || 15,
     nextmap: "map oa_rpg3dm2",
     sv_fps: 40,
@@ -124,15 +136,19 @@ for (const def of definitions) {
   );
   children.push(child);
   room.child = child;
-  let remainder = "";
+  let remainder = "",
+    lineSequence = 0;
   function consume(chunk) {
     appendFile(join(home, "server.log"), chunk).catch(() => {});
     remainder += chunk;
     const lines = remainder.split("\n");
     remainder = lines.pop();
-    for (const line of lines) {
+    for (const rawLine of lines) {
+      const line = decodeNativeRecord(rawLine, room.logNonce);
+      if (line === null) continue;
+      room.tracker.consume(line, ++lineSequence);
       trackBotSlots(room, line);
-      if (line.includes("InitGame:")) {
+      if (line.startsWith("InitGame:")) {
         room.map = parseStartedMap(line) || room.map;
         room.nextMap = nextMap(room.map);
         room.child.stdin.write(`set nextmap "map ${room.nextMap}"\n`);
@@ -144,7 +160,7 @@ for (const def of definitions) {
           round: ++room.round,
         });
       }
-      const kill = line.match(/Kill: (\d+) (\d+) (\d+): (.*)/);
+      const kill = line.match(/^Kill: (\d+) (\d+) (\d+): (.*)/);
       if (kill)
         event({
           type: "game.kill",
@@ -154,13 +170,13 @@ for (const def of definitions) {
           meansOfDeath: +kill[3],
           description: kill[4],
         });
-      if (line.includes("Exit:"))
+      if (line.startsWith("Exit:"))
         event({
           type: "round.finished",
           room: def.id,
           reason: line.split("Exit:")[1].trim(),
         });
-      const identity = line.match(/ClientUserinfoChanged: (\d+) (.*)/);
+      const identity = line.match(/^ClientUserinfoChanged: (\d+) (.*)/);
       if (identity)
         event({
           type: "game.identity",
@@ -221,6 +237,7 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/api/config")
       return json(res, 200, {
         mode: "demo",
+        policy: publicPolicy(),
         rewards: false,
         engine: "ioquake3",
         parentOrigins: origins,
@@ -233,6 +250,7 @@ const server = http.createServer(async (req, res) => {
         rooms: [...rooms.values()].map((r) => ({
           id: r.id,
           name: r.name,
+          mode: modeForRoom(r.id).id,
           map: r.map,
           mapName: mapName(r.map),
           nextMap: nextMap(r.map),
@@ -332,6 +350,7 @@ const gateway = attachGateway(server, {
   secret,
   allowedOrigins: origins,
   onEvent: event,
+  getMatchState: (room) => rooms.get(room)?.tracker.snapshot(),
 });
 server.listen(PORT, HOST, () =>
   console.log(
